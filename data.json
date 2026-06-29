@@ -1,14 +1,23 @@
 {
-  "updated_at": "2026-06-30",
+  "updated_at": "2026-07-01",
   "name": "Ольга",
-  "sleep_hours": 6.5,
-  "coffee_cups": 2,
-  "mood": 10,
-  "steps": 14000,
+  "sleep_hours": 0,
+  "coffee_cups": 0,
+  "mood": 0,
+  "steps": 0,
   "steps_goal": 11000,
-  "spending": 310,
+  "spending": 0,
   "spending_limit": 1000,
   "currency": "₾",
-  "sleep_pct": 87,
-  "comment": "Встала в 9:30, плавала на море, 14k шагов. Настроение 10."
+  "sleep_pct": 0,
+  "comment": "Новый день. Жду первых записей.",
+  "yesterday": {
+    "date": "2026-06-30",
+    "sleep_hours": 6.5,
+    "coffee_cups": 2,
+    "mood": 10,
+    "steps": 14000,
+    "spending": 310,
+    "comment": "Встала в 9:30, плавала на море, 14k шагов. Настроение 10."
+  }
 }
