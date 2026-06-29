@@ -1,13 +1,14 @@
 {
   "updated_at": "2026-06-30",
   "name": "Ольга",
-  "sleep_hours": 6,
-  "coffee_cups": 3,
-  "mood": 8,
-  "steps": 9500,
+  "sleep_hours": 6.5,
+  "coffee_cups": 2,
+  "mood": 10,
+  "steps": 14000,
   "steps_goal": 11000,
-  "spending": 2400,
-  "spending_limit": 5000,
-  "sleep_pct": 75,
-  "comment": "Сон мало, шаги почти в норме, настроение хорошее."
+  "spending": 310,
+  "spending_limit": 1000,
+  "currency": "₾",
+  "sleep_pct": 87,
+  "comment": "Встала в 9:30, плавала на море, 14k шагов. Настроение 10."
 }

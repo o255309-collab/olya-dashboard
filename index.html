@@ -453,7 +453,7 @@
       }
       if (pills[2]) {
         pills[2].querySelector('.fill').style.width = spendPct + '%';
-        pills[2].querySelectorAll('span')[0].textContent = 'Бюджет · ' + fmt(d.spending) + ' ₽';
+        pills[2].querySelectorAll('span')[0].textContent = 'Бюджет · ' + fmt(d.spending) + ' ' + (d.currency || '₽');
         pills[2].querySelectorAll('span')[1].textContent = spendPct + '%';
       }
 
@@ -485,8 +485,8 @@
       }
       // 5. Траты
       if (rows[4]) {
-        rows[4].querySelector('.sb').textContent = 'Лимит ' + fmt(d.spending_limit) + ' ₽';
-        rows[4].querySelector('.v').textContent = fmt(d.spending) + ' ₽';
+        rows[4].querySelector('.sb').textContent = 'Лимит ' + fmt(d.spending_limit) + ' ' + (d.currency || '₽');
+        rows[4].querySelector('.v').textContent = fmt(d.spending) + ' ' + (d.currency || '₽');
         rows[4].querySelector('.badge').textContent = spendPct <= 80 ? 'В норме' : 'На грани';
         rows[4].querySelector('.badge').className = 'badge ' + (spendPct <= 80 ? 'b-good' : 'b-warn');
       }
@@ -499,7 +499,7 @@
       const evs = document.querySelectorAll('section[data-view="today"] .ev');
       if (evs.length) {
         const lastEv = evs[evs.length - 1];
-        if (lastEv) lastEv.querySelector('.s').textContent = fmt(d.steps) + ' шагов · ' + fmt(d.spending) + ' ₽';
+        if (lastEv) lastEv.querySelector('.s').textContent = fmt(d.steps) + ' шагов · ' + fmt(d.spending) + ' ' + (d.currency || '₽');
       }
     })
     .catch(err => console.error('data.json не загрузился:', err));
