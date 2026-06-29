@@ -313,12 +313,8 @@
       </div>
 
       <div class="st"><h2>По дням</h2><a>↗</a></div>
-      <div class="card">
-        <div class="daycard"><div class="dd"><b>28</b><small>Пн</small></div><div class="info"><div class="top">Понедельник</div><div class="met"><span>👟 11 300</span><span>😴 7,5 ч</span><span>☕️ 2</span></div></div><div class="mood-emo">😄</div></div>
-        <div class="daycard"><div class="dd"><b>29</b><small>Вт</small></div><div class="info"><div class="top">Вторник</div><div class="met"><span>👟 9 800</span><span>😴 6,5 ч</span><span>☕️ 3</span></div></div><div class="mood-emo">🙂</div></div>
-        <div class="daycard today"><div class="dd"><b>30</b><small>Ср</small></div><div class="info"><div class="top">Сегодня</div><div class="met"><span>👟 9 500</span><span>😴 6 ч</span><span>☕️ 3</span></div></div><div class="mood-emo">🙂</div></div>
-        <div class="daycard"><div class="dd"><b>1</b><small>Чт</small></div><div class="info"><div class="top">Четверг</div><div class="met" style="color:#bbb6a6">— запланировано</div></div><div class="mood-emo">·</div></div>
-        <div class="daycard"><div class="dd"><b>2</b><small>Пт</small></div><div class="info"><div class="top">Пятница</div><div class="met" style="color:#bbb6a6">— запланировано</div></div><div class="mood-emo">·</div></div>
+      <div class="card" id="weekDayList">
+        <div class="sb" style="text-align:center;padding:20px 0">История загружается…</div>
       </div>
 
       <div class="st"><h2>Шаги за неделю</h2><div class="legend"><span><span class="dotk" style="background:#1c1c1e"></span><b>Шаги</b></span><span><span class="dotk" style="background:#f6d34a"></span>Цель</span></div></div>
@@ -425,11 +421,26 @@
   const fmt = n => n.toLocaleString('ru-RU');
   const clamp = (v, max) => Math.max(0, Math.min(100, Math.round(v/max*100)));
 
+  // Форматирование даты в человеческий вид
+  const monthsRu = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  const formatDateRu = isoDate => {
+    if (!isoDate) return '';
+    const [y, m, d] = isoDate.split('-').map(Number);
+    return `${d} ${monthsRu[m-1]}`;
+  };
+  const weekdayShort = isoDate => {
+    const dt = new Date(isoDate + 'T12:00:00');
+    return ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][dt.getDay()];
+  };
+  const moodEmoji = m => m >= 9 ? '🤩' : m >= 7 ? '😄' : m >= 5 ? '🙂' : m >= 3 ? '😐' : m > 0 ? '😞' : '·';
+
   fetch('data.json?t='+Date.now())
     .then(r => r.json())
     .then(d => {
-      // имя
+      // имя + дата сегодняшнего дня
       if (d.name) document.getElementById('ptitle').textContent = 'Привет, ' + d.name;
+      const dateEl = document.getElementById('date');
+      if (dateEl && d.updated_at) dateEl.textContent = 'Данные за ' + formatDateRu(d.updated_at);
 
       // три верхних плитки
       const heroM = document.querySelectorAll('.hero .m .n');
@@ -503,6 +514,46 @@
       }
     })
     .catch(err => console.error('data.json не загрузился:', err));
+
+  // ===== ИСТОРИЯ ПО ДНЯМ (раздел «Неделя» → По дням) =====
+  fetch('archive/index.json?t='+Date.now())
+    .then(r => r.json())
+    .then(idx => {
+      const list = document.getElementById('weekDayList');
+      if (!list || !idx.days || !idx.days.length) {
+        if (list) list.innerHTML = '<div class="sb" style="text-align:center;padding:20px 0">Истории пока нет. Первая запись появится после прожитого дня.</div>';
+        return;
+      }
+      const todayIso = new Date().toISOString().slice(0,10);
+      list.innerHTML = '';
+      // Показываем последние 7, новые сверху
+      const days = idx.days.slice(-7).reverse();
+      for (const day of days) {
+        const [y, m, dd] = day.date.split('-');
+        const isToday = day.date === todayIso;
+        const div = document.createElement('div');
+        div.className = 'daycard' + (isToday ? ' today' : '');
+        const wd = weekdayShort(day.date);
+        const fullDay = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'][new Date(day.date + 'T12:00:00').getDay()];
+        div.innerHTML = `
+          <div class="dd"><b>${parseInt(dd,10)}</b><small>${wd}</small></div>
+          <div class="info">
+            <div class="top">${isToday ? 'Сегодня' : fullDay}</div>
+            <div class="met">
+              <span>👟 ${day.steps.toLocaleString('ru-RU')}</span>
+              <span>😴 ${day.sleep_hours} ч</span>
+              <span>☕️ ${day.coffee_cups}</span>
+            </div>
+          </div>
+          <div class="mood-emo">${moodEmoji(day.mood)}</div>`;
+        list.appendChild(div);
+      }
+    })
+    .catch(err => {
+      const list = document.getElementById('weekDayList');
+      if (list) list.innerHTML = '<div class="sb" style="text-align:center;padding:20px 0;color:#c0492f">История не загрузилась</div>';
+      console.error('archive/index.json не загрузился:', err);
+    });
 </script>
 </body>
 </html>
