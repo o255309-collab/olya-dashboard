@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сводка дня</title>
+<style>
+  :root{
+    --page:#9a9aa0;
+    --shell:#f3ede1;
+    --cream:#f7f2e7;
+    --cream2:#f1e9d6;
+    --yellow:#f6d34a;
+    --yellow-soft:#f9e08a;
+    --ink:#1c1c1e;
+    --ink2:#86837b;
+    --line:#e7ddc7;
+    --dark:#1c1c1e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","SF Pro Display",sans-serif;
+    background:var(--page);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:28px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .shell{
+    width:100%;max-width:1040px;
+    background:linear-gradient(160deg,#f6f1e6,#efe6d2);
+    border-radius:30px;
+    padding:22px;
+    box-shadow:0 40px 90px rgba(0,0,0,.30);
+  }
+
+  /* top bar */
+  nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .brand{font-size:19px;font-weight:700;background:#fff;padding:9px 20px;border-radius:30px;
+    box-shadow:0 2px 6px rgba(0,0,0,.05)}
+  .menu{display:flex;align-items:center;gap:4px;background:#fff;padding:5px;border-radius:30px;
+    box-shadow:0 2px 6px rgba(0,0,0,.05)}
+  .menu a{font-size:13px;font-weight:600;color:var(--ink2);padding:9px 15px;border-radius:24px;text-decoration:none}
+  .menu a.active{background:var(--dark);color:#fff}
+  .icons{display:flex;gap:8px}
+  .icobtn{width:40px;height:40px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.05);font-size:16px}
+
+  /* greeting + top metrics */
+  .head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin:14px 6px 22px}
+  h1{font-size:44px;font-weight:700;letter-spacing:-1px}
+  .topmetrics{display:flex;align-items:center;gap:26px;padding-top:14px}
+  .tm{text-align:left}
+  .tm .ico{font-size:15px;color:var(--ink2)}
+  .tm .num{font-size:34px;font-weight:700;letter-spacing:-1px;line-height:1}
+  .tm .cap{font-size:12px;color:var(--ink2);margin-top:2px}
+
+  .progress{display:flex;gap:10px;margin:0 6px 22px}
+  .pbar{flex:1;border-radius:30px;padding:10px 16px;font-size:12px;font-weight:600;position:relative;overflow:hidden}
+  .pbar .pl{position:relative;z-index:2}
+  .pbar .pv{position:relative;z-index:2;float:right;opacity:.85}
+  .pbar.dark{background:var(--dark);color:#fff}
+  .pbar.dark .fill{position:absolute;left:0;top:0;bottom:0;width:70%;background:#3a3a3c;border-radius:30px;z-index:1}
+  .pbar.yellow{background:var(--yellow)}
+  .pbar.yellow .fill{position:absolute;left:0;top:0;bottom:0;width:42%;background:#f2c419;border-radius:30px;z-index:1}
+  .pbar.cream{background:#eadfca}
+  .pbar.cream .fill{position:absolute;left:0;top:0;bottom:0;width:55%;background:#ddcfaf;border-radius:30px;z-index:1}
+  .pbar.stripe{background:repeating-linear-gradient(45deg,#eadfca,#eadfca 6px,#f1e9d6 6px,#f1e9d6 12px)}
+
+  /* main grid */
+  .grid{display:grid;grid-template-columns:1fr 1.7fr;gap:16px}
+  .card{background:var(--cream);border-radius:24px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+  .card h3{font-size:18px;font-weight:700}
+  .ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .arrow{width:30px;height:30px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:14px}
+
+  /* schedule timeline */
+  .schedule{grid-row:span 2}
+  .week{display:flex;justify-content:space-between;margin-bottom:16px}
+  .day{text-align:center;font-size:12px;color:var(--ink2);width:32px}
+  .day .dn{font-weight:700;color:var(--ink);font-size:14px;margin-top:4px;padding:5px 0;border-radius:10px}
+  .day.on .dn{background:var(--dark);color:#fff}
+  .tl{position:relative;padding-left:8px}
+  .ev{display:flex;gap:10px;margin-bottom:8px;align-items:stretch}
+  .ev .time{font-size:11px;color:var(--ink2);width:34px;flex:0 0 34px;padding-top:12px}
+  .ev .body{flex:1;border-radius:16px;padding:12px 14px}
+  .ev.dark .body{background:var(--dark);color:#fff}
+  .ev.lite .body{background:#fff}
+  .ev .t{font-size:13px;font-weight:700}
+  .ev .s{font-size:11px;opacity:.6;margin-top:2px}
+
+  /* right column rows */
+  .rcol{display:flex;flex-direction:column;gap:16px}
+  .listrow{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line)}
+  .listrow:last-child{border-bottom:none}
+  .li-left{display:flex;align-items:center;gap:12px}
+  .li-ico{width:38px;height:38px;border-radius:12px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:18px}
+  .li-name{font-size:14px;font-weight:600}
+  .li-sub{font-size:12px;color:var(--ink2)}
+  .badge{font-size:11px;font-weight:600;padding:5px 11px;border-radius:20px}
+  .b-good{background:#e7f6e2;color:#2c8a3d}
+  .b-warn{background:#fdeccb;color:#b07d12}
+  .b-yellow{background:var(--yellow-soft);color:#7a5e06}
+
+  /* dark dot card */
+  .darkcard{background:var(--dark);color:#fff;border-radius:24px;padding:20px}
+  .darkcard .big{font-size:40px;font-weight:700;letter-spacing:-1px;display:flex;align-items:baseline;gap:8px;margin:6px 0 18px}
+  .darkcard .big .d2{color:var(--yellow);font-size:30px}
+  .dots{display:grid;grid-template-columns:repeat(11,1fr);gap:7px}
+  .dots span{width:9px;height:9px;border-radius:50%;background:#3a3a3c}
+
+  /* chart */
+  .chart-wrap{position:relative}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--ink2);margin-bottom:10px}
+  .legend b{color:var(--ink)}
+  .dotk{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+
+  /* donut */
+  .donut-card{display:flex;align-items:center;gap:18px}
+  .donut{position:relative;width:120px;height:120px;flex:0 0 120px}
+  .donut .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .donut .center b{font-size:26px;font-weight:700}
+  .donut .center small{font-size:11px;color:var(--ink2)}
+  .splits{display:flex;gap:18px;margin-top:8px}
+  .split b{font-size:22px;font-weight:700}
+  .split small{font-size:12px;color:var(--ink2);display:block}
+
+  .botgrid{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
+
+  @media(max-width:860px){
+    .grid{grid-template-columns:1fr}.schedule{grid-row:auto}
+    .head{flex-direction:column}.botgrid{grid-template-columns:1fr}
+    .menu{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <nav>
+    <div class="brand">Сводка</div>
+    <div class="menu">
+      <a href="#" class="active">Сегодня</a>
+      <a href="#">Сон</a>
+      <a href="#">Активность</a>
+      <a href="#">Финансы</a>
+      <a href="#">Настроение</a>
+      <a href="#">Неделя</a>
+    </div>
+    <div class="icons">
+      <div class="icobtn">⚙️</div>
+      <div class="icobtn">🔔</div>
+      <div class="icobtn">🙂</div>
+    </div>
+  </nav>
+
+  <div class="head">
+    <div>
+      <h1>Привет, Ольга</h1>
+      <div style="color:var(--ink2);font-size:14px;margin-top:6px" id="date"></div>
+    </div>
+    <div class="topmetrics">
+      <div class="tm"><div class="ico">😴</div><div class="num">6<span style="font-size:18px">ч</span></div><div class="cap">Сон</div></div>
+      <div class="tm"><div class="ico">☕️</div><div class="num">3</div><div class="cap">Кофе</div></div>
+      <div class="tm"><div class="ico">😊</div><div class="num">8<span style="font-size:18px">/10</span></div><div class="cap">Настроение</div></div>
+    </div>
+  </div>
+
+  <div class="progress">
+    <div class="pbar dark"><div class="fill"></div><span class="pl">Шаги</span><span class="pv">86%</span></div>
+    <div class="pbar yellow"><div class="fill"></div><span class="pl">Сон</span><span class="pv">75%</span></div>
+    <div class="pbar cream"><div class="fill"></div><span class="pl">Бюджет</span><span class="pv">48%</span></div>
+    <div class="pbar stripe"><span class="pl">Настроение</span><span class="pv">80%</span></div>
+  </div>
+
+  <div class="grid">
+
+    <!-- schedule -->
+    <div class="card schedule">
+      <div class="ch"><h3>Сегодня</h3><div class="arrow">↗</div></div>
+      <div class="week">
+        <div class="day"><div>Пн</div><div class="dn">28</div></div>
+        <div class="day"><div>Вт</div><div class="dn">29</div></div>
+        <div class="day on"><div>Ср</div><div class="dn">30</div></div>
+        <div class="day"><div>Чт</div><div class="dn">1</div></div>
+        <div class="day"><div>Пт</div><div class="dn">2</div></div>
+        <div class="day"><div>Сб</div><div class="dn">3</div></div>
+      </div>
+      <div class="tl">
+        <div class="ev dark"><div class="time">07:00</div><div class="body"><div class="t">Подъём</div><div class="s">Сон 6 ч · мало</div></div></div>
+        <div class="ev lite"><div class="time">09:00</div><div class="body"><div class="t">Первый кофе ☕️</div><div class="s">09:00–09:30</div></div></div>
+        <div class="ev lite"><div class="time">13:00</div><div class="body"><div class="t">Прогулка</div><div class="s">+4 200 шагов</div></div></div>
+        <div class="ev dark"><div class="time">16:00</div><div class="body"><div class="t">Третий кофе ☕️</div><div class="s">Лучше последний</div></div></div>
+        <div class="ev lite"><div class="time">21:00</div><div class="body"><div class="t">Итог дня</div><div class="s">9 500 шагов · 2 400 ₽</div></div></div>
+      </div>
+    </div>
+
+    <!-- right top: metrics list -->
+    <div class="card">
+      <div class="ch"><h3>Показатели дня</h3><div class="arrow">↗</div></div>
+      <div class="listrow">
+        <div class="li-left"><div class="li-ico">👟</div><div><div class="li-name">Шаги</div><div class="li-sub">Цель 11 000</div></div></div>
+        <div style="text-align:right"><div class="li-name">9 500</div><span class="badge b-warn">86%</span></div>
+      </div>
+      <div class="listrow">
+        <div class="li-left"><div class="li-ico">😴</div><div><div class="li-name">Сон</div><div class="li-sub">Норма 7,5 ч</div></div></div>
+        <div style="text-align:right"><div class="li-name">6 ч</div><span class="badge b-warn">Мало</span></div>
+      </div>
+      <div class="listrow">
+        <div class="li-left"><div class="li-ico">☕️</div><div><div class="li-name">Кофе</div><div class="li-sub">Лимит 2–3</div></div></div>
+        <div style="text-align:right"><div class="li-name">3 кружки</div><span class="badge b-yellow">На грани</span></div>
+      </div>
+      <div class="listrow">
+        <div class="li-left"><div class="li-ico">😊</div><div><div class="li-name">Настроение</div><div class="li-sub">Самооценка</div></div></div>
+        <div style="text-align:right"><div class="li-name">8 / 10</div><span class="badge b-good">Хорошо</span></div>
+      </div>
+      <div class="listrow">
+        <div class="li-left"><div class="li-ico">💸</div><div><div class="li-name">Траты</div><div class="li-sub">Лимит 5 000 ₽</div></div></div>
+        <div style="text-align:right"><div class="li-name">2 400 ₽</div><span class="badge b-good">В норме</span></div>
+      </div>
+    </div>
+
+    <!-- dark dot card (kept in right column, second row spot) -->
+    <div class="darkcard">
+      <div class="ch" style="color:#fff"><h3 style="color:#fff">Активность</h3><div class="arrow" style="background:#3a3a3c;color:#fff">↗</div></div>
+      <div class="big">9 500 <span class="d2">↗ 86%</span></div>
+      <div class="dots" id="actDots"></div>
+    </div>
+
+  </div>
+
+  <div class="botgrid" style="margin-top:16px">
+
+    <!-- chart -->
+    <div class="card">
+      <div class="ch"><h3>Шаги за неделю</h3>
+        <div class="legend"><span><span class="dotk" style="background:#1c1c1e"></span><b>Шаги</b></span><span><span class="dotk" style="background:#f6d34a"></span>Цель</span></div>
+      </div>
+      <svg viewBox="0 0 520 180" width="100%" height="180" class="chart-wrap">
+        <line x1="30" y1="20" x2="30" y2="150" stroke="#e7ddc7"/>
+        <line x1="30" y1="150" x2="510" y2="150" stroke="#e7ddc7"/>
+        <line x1="30" y1="70" x2="510" y2="70" stroke="#f0e8d6" stroke-dasharray="3 4"/>
+        <!-- goal line -->
+        <line x1="30" y1="48" x2="510" y2="48" stroke="#f6d34a" stroke-width="2" stroke-dasharray="5 5"/>
+        <!-- steps polyline -->
+        <polyline fill="none" stroke="#1c1c1e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+          points="30,120 110,95 190,135 270,70 350,90 430,60 510,78"/>
+        <!-- today marker -->
+        <circle cx="510" cy="78" r="6" fill="#f6d34a" stroke="#1c1c1e" stroke-width="2"/>
+        <g font-size="11" fill="#86837b" font-family="sans-serif">
+          <text x="26" y="168">Чт</text><text x="106" y="168">Пт</text><text x="186" y="168">Сб</text>
+          <text x="266" y="168">Вс</text><text x="346" y="168">Пн</text><text x="426" y="168">Вт</text><text x="500" y="168">Ср</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- donut: день в балансе -->
+    <div class="card donut-card">
+      <div class="donut">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="48" fill="none" stroke="#eadfca" stroke-width="16"/>
+          <circle cx="60" cy="60" r="48" fill="none" stroke="#f6d34a" stroke-width="16"
+            stroke-linecap="round" stroke-dasharray="301.6" stroke-dashoffset="60" transform="rotate(-90 60 60)"/>
+          <circle cx="60" cy="60" r="48" fill="none" stroke="#1c1c1e" stroke-width="16"
+            stroke-linecap="round" stroke-dasharray="301.6" stroke-dashoffset="241" transform="rotate(-90 60 60)"/>
+        </svg>
+        <div class="center"><b>80</b><small>Баланс дня</small></div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:4px">Баланс дня</div>
+        <div class="li-sub">Активность и настроение тянут вверх, сон — вниз.</div>
+        <div class="splits">
+          <div class="split"><b>80%</b><small>🟡 в плюс</small></div>
+          <div class="split"><b>20%</b><small>⚫ добрать</small></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  const d=new Date();
+  document.getElementById('date').textContent=
+    d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // dot matrix: 86% активны, акцент жёлтым
+  const g=document.getElementById('actDots');
+  const total=66, lit=Math.round(total*0.86);
+  for(let i=0;i<total;i++){
+    const s=document.createElement('span');
+    if(i<lit){ s.style.background = (i%7===0)?'#f6d34a':'#f6d34a'; s.style.opacity=(i%3===0)?'1':'.8'; }
+    g.appendChild(s);
+  }
+</script>
+</body>
+</html>
