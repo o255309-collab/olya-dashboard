@@ -367,6 +367,15 @@
     <button class="tab" data-go="more"><span class="ti">☰</span>Ещё</button>
   </div>
 
+  <!-- day details modal -->
+  <div class="overlay" id="dayOverlay">
+    <div class="sheet">
+      <div class="grab"></div>
+      <h3 id="dayTitle">День</h3>
+      <div id="dayBody" style="font-size:14px;line-height:1.5"></div>
+    </div>
+  </div>
+
   <!-- add sheet -->
   <div class="overlay" id="overlay">
     <div class="sheet">
@@ -436,11 +445,21 @@
 
   fetch('data.json?t='+Date.now())
     .then(r => r.json())
-    .then(d => {
-      // имя + дата сегодняшнего дня
-      if (d.name) document.getElementById('ptitle').textContent = 'Привет, ' + d.name;
+    .then(raw => {
+      // Если сегодня по нулям — подменяем главное на yesterday, чтобы дашборд не выглядел пустым
+      const isEmpty = !raw.steps && !raw.sleep_hours && !raw.coffee_cups && !raw.mood && !raw.spending;
+      const useYesterday = isEmpty && raw.yesterday;
+      const d = useYesterday
+        ? Object.assign({}, raw, raw.yesterday, {updated_at: raw.yesterday.date, _from_yesterday: true})
+        : raw;
+
+      // имя + дата отображаемого дня (с пометкой "за вчера" если данные из yesterday)
+      if (raw.name) document.getElementById('ptitle').textContent = 'Привет, ' + raw.name;
       const dateEl = document.getElementById('date');
-      if (dateEl && d.updated_at) dateEl.textContent = 'Данные за ' + formatDateRu(d.updated_at);
+      if (dateEl) {
+        const label = useYesterday ? 'Вчера · ' + formatDateRu(d.updated_at) : 'Сегодня · ' + formatDateRu(d.updated_at);
+        dateEl.textContent = label;
+      }
 
       // три верхних плитки
       const heroM = document.querySelectorAll('.hero .m .n');
@@ -515,6 +534,51 @@
     })
     .catch(err => console.error('data.json не загрузился:', err));
 
+  // ===== МОДАЛКА «День детально» =====
+  const dayOverlay = document.getElementById('dayOverlay');
+  dayOverlay.addEventListener('click', e => { if (e.target === dayOverlay) dayOverlay.classList.remove('open'); });
+  // Открыть карточку дня. Подтягивает полные данные из archive/YYYY-MM-DD.json
+  async function openDayDetails(daySummary) {
+    const title = document.getElementById('dayTitle');
+    const body = document.getElementById('dayBody');
+    const fullDay = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'][new Date(daySummary.date + 'T12:00:00').getDay()];
+    title.textContent = fullDay + ' · ' + formatDateRu(daySummary.date);
+    body.innerHTML = '<div style="color:var(--ink2)">Загружаю…</div>';
+    dayOverlay.classList.add('open');
+    try {
+      const r = await fetch('archive/' + daySummary.date + '.json?t=' + Date.now());
+      const d = await r.json();
+      const moodPct = Math.round((d.mood || 0) * 10);
+      body.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+          <div style="background:#fff;border-radius:14px;padding:12px">
+            <div style="color:var(--ink2);font-size:11px">😴 Сон</div>
+            <div style="font-size:22px;font-weight:700;margin-top:4px">${d.sleep_hours || 0} <span style="font-size:13px">ч</span></div>
+          </div>
+          <div style="background:#fff;border-radius:14px;padding:12px">
+            <div style="color:var(--ink2);font-size:11px">☕️ Кофе</div>
+            <div style="font-size:22px;font-weight:700;margin-top:4px">${d.coffee_cups || 0}</div>
+          </div>
+          <div style="background:#fff;border-radius:14px;padding:12px">
+            <div style="color:var(--ink2);font-size:11px">😊 Настроение</div>
+            <div style="font-size:22px;font-weight:700;margin-top:4px">${d.mood || 0} <span style="font-size:13px">/10</span></div>
+          </div>
+          <div style="background:#fff;border-radius:14px;padding:12px">
+            <div style="color:var(--ink2);font-size:11px">👟 Шаги</div>
+            <div style="font-size:22px;font-weight:700;margin-top:4px">${(d.steps || 0).toLocaleString('ru-RU')}</div>
+          </div>
+          <div style="background:#fff;border-radius:14px;padding:12px;grid-column:span 2">
+            <div style="color:var(--ink2);font-size:11px">💸 Траты</div>
+            <div style="font-size:22px;font-weight:700;margin-top:4px">${(d.spending || 0).toLocaleString('ru-RU')} ${d.currency || '₾'}</div>
+          </div>
+        </div>
+        ${d.comment ? `<div style="background:var(--cream2);border-radius:14px;padding:12px;font-size:13px;color:var(--ink)">📝 ${d.comment}</div>` : ''}
+      `;
+    } catch (err) {
+      body.innerHTML = '<div style="color:#c0492f">Не удалось загрузить данные дня</div>';
+    }
+  }
+
   // ===== ИСТОРИЯ ПО ДНЯМ (раздел «Неделя» → По дням) =====
   fetch('archive/index.json?t='+Date.now())
     .then(r => r.json())
@@ -571,6 +635,8 @@
             </div>
           </div>
           <div class="mood-emo">${moodEmoji(day.mood)}</div>`;
+        div.style.cursor = 'pointer';
+        div.addEventListener('click', () => openDayDetails(day));
         list.appendChild(div);
       }
     })
