@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-01",
+  "updated_at": "2026-06-30",
   "name": "Ольга",
   "sleep_hours": 0,
   "coffee_cups": 0,
@@ -12,7 +12,7 @@
   "sleep_pct": 0,
   "comment": "Новый день. Жду первых записей.",
   "yesterday": {
-    "date": "2026-06-30",
+    "date": "2026-06-29",
     "sleep_hours": 6.5,
     "coffee_cups": 2,
     "mood": 10,
