@@ -1,47 +1,13 @@
 {
-  "date": "2026-06-30",
+  "updated_at": "2026-06-30",
   "name": "Ольга",
-  "top": {
-    "sleep_hours": 6,
-    "coffee_cups": 3,
-    "mood": 8
-  },
-  "progress": {
-    "steps_pct": 86,
-    "sleep_pct": 75,
-    "budget_pct": 48,
-    "mood_pct": 80
-  },
-  "metrics": {
-    "steps": { "value": 9500, "goal": 11000, "pct": 86, "status": "warn" },
-    "sleep": { "value": "6 ч", "goal": "7,5 ч", "label": "Мало", "status": "warn" },
-    "coffee": { "value": "3 кружки", "goal": "2–3", "label": "На грани", "status": "yellow" },
-    "mood": { "value": "8 / 10", "label": "Хорошо", "status": "good" },
-    "spending": { "value": "2 400 ₽", "goal": "5 000 ₽", "label": "В норме", "status": "good" }
-  },
-  "today_events": [
-    { "time": "07:00", "title": "Подъём", "subtitle": "Сон 6 ч · мало", "style": "dark" },
-    { "time": "09:00", "title": "Первый кофе ☕️", "subtitle": "09:00–09:30", "style": "lite" },
-    { "time": "13:00", "title": "Прогулка", "subtitle": "+4 200 шагов", "style": "lite" },
-    { "time": "16:00", "title": "Третий кофе ☕️", "subtitle": "Лучше последний", "style": "dark" },
-    { "time": "21:00", "title": "Итог дня", "subtitle": "9 500 шагов · 2 400 ₽", "style": "lite" }
-  ],
-  "week_steps": [
-    { "day": "Чт", "steps": 7200 },
-    { "day": "Пт", "steps": 9100 },
-    { "day": "Сб", "steps": 5800 },
-    { "day": "Вс", "steps": 11800 },
-    { "day": "Пн", "steps": 10200 },
-    { "day": "Вт", "steps": 12400 },
-    { "day": "Ср", "steps": 9500 }
-  ],
-  "week_goal": 11000,
-  "balance": {
-    "score": 80,
-    "comment": "Активность и настроение тянут вверх, сон — вниз.",
-    "plus_pct": 80,
-    "minus_pct": 20
-  },
-  "_updated_at": "2026-06-29T20:55:00Z",
-  "_updated_by": "Мерлин"
+  "sleep_hours": 6,
+  "coffee_cups": 3,
+  "mood": 8,
+  "steps": 9500,
+  "steps_goal": 11000,
+  "spending": 2400,
+  "spending_limit": 5000,
+  "sleep_pct": 75,
+  "comment": "Сон мало, шаги почти в норме, настроение хорошее."
 }

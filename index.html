@@ -419,6 +419,90 @@
   document.getElementById('addBtn').addEventListener('click',()=>overlay.classList.add('open'));
   overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open')});
   document.querySelectorAll('.qbtn').forEach(b=>b.addEventListener('click',()=>overlay.classList.remove('open')));
+
+  // ===== ЖИВЫЕ ДАННЫЕ ИЗ data.json =====
+  // Подтягиваем значения и подставляем в дашборд. Меняешь только data.json — HTML сам обновится.
+  const fmt = n => n.toLocaleString('ru-RU');
+  const clamp = (v, max) => Math.max(0, Math.min(100, Math.round(v/max*100)));
+
+  fetch('data.json?t='+Date.now())
+    .then(r => r.json())
+    .then(d => {
+      // имя
+      if (d.name) document.getElementById('ptitle').textContent = 'Привет, ' + d.name;
+
+      // три верхних плитки
+      const heroM = document.querySelectorAll('.hero .m .n');
+      if (heroM[0]) heroM[0].innerHTML = d.sleep_hours + '<small>ч</small>';
+      if (heroM[1]) heroM[1].textContent = d.coffee_cups;
+      if (heroM[2]) heroM[2].innerHTML = d.mood + '<small>/10</small>';
+
+      // три прогресс-плашки
+      const pills = document.querySelectorAll('.pills .pill');
+      const stepsPct = clamp(d.steps, d.steps_goal);
+      const spendPct = clamp(d.spending, d.spending_limit);
+      if (pills[0]) {
+        pills[0].querySelector('.fill').style.width = stepsPct + '%';
+        pills[0].querySelectorAll('span')[0].textContent = 'Шаги · ' + fmt(d.steps);
+        pills[0].querySelectorAll('span')[1].textContent = stepsPct + '%';
+      }
+      if (pills[1]) {
+        pills[1].querySelector('.fill').style.width = (d.sleep_pct || 75) + '%';
+        pills[1].querySelectorAll('span')[0].textContent = 'Сон · ' + d.sleep_hours + ' ч';
+        pills[1].querySelectorAll('span')[1].textContent = (d.sleep_pct || 75) + '%';
+      }
+      if (pills[2]) {
+        pills[2].querySelector('.fill').style.width = spendPct + '%';
+        pills[2].querySelectorAll('span')[0].textContent = 'Бюджет · ' + fmt(d.spending) + ' ₽';
+        pills[2].querySelectorAll('span')[1].textContent = spendPct + '%';
+      }
+
+      // карточка «Показатели дня» — 5 рядов в первой .card
+      const rows = document.querySelector('section[data-view="today"] .card').querySelectorAll('.row');
+      // 1. Шаги
+      if (rows[0]) {
+        rows[0].querySelector('.sb').textContent = 'Цель ' + fmt(d.steps_goal);
+        rows[0].querySelector('.v').textContent = fmt(d.steps);
+        rows[0].querySelector('.badge').textContent = stepsPct + '%';
+      }
+      // 2. Сон
+      if (rows[1]) {
+        rows[1].querySelector('.v').textContent = d.sleep_hours + ' ч';
+        rows[1].querySelector('.badge').textContent = d.sleep_hours >= 7 ? 'Норма' : 'Мало';
+        rows[1].querySelector('.badge').className = 'badge ' + (d.sleep_hours >= 7 ? 'b-good' : 'b-warn');
+      }
+      // 3. Кофе
+      if (rows[2]) {
+        rows[2].querySelector('.v').textContent = d.coffee_cups + ' кружк' + (d.coffee_cups === 1 ? 'а' : (d.coffee_cups < 5 ? 'и' : 'ек'));
+        rows[2].querySelector('.badge').textContent = d.coffee_cups <= 2 ? 'В норме' : (d.coffee_cups === 3 ? 'На грани' : 'Перебор');
+        rows[2].querySelector('.badge').className = 'badge ' + (d.coffee_cups <= 2 ? 'b-good' : (d.coffee_cups === 3 ? 'b-yellow' : 'b-warn'));
+      }
+      // 4. Настроение
+      if (rows[3]) {
+        rows[3].querySelector('.v').textContent = d.mood + ' / 10';
+        rows[3].querySelector('.badge').textContent = d.mood >= 8 ? 'Хорошо' : (d.mood >= 5 ? 'Так себе' : 'Плохо');
+        rows[3].querySelector('.badge').className = 'badge ' + (d.mood >= 8 ? 'b-good' : (d.mood >= 5 ? 'b-yellow' : 'b-warn'));
+      }
+      // 5. Траты
+      if (rows[4]) {
+        rows[4].querySelector('.sb').textContent = 'Лимит ' + fmt(d.spending_limit) + ' ₽';
+        rows[4].querySelector('.v').textContent = fmt(d.spending) + ' ₽';
+        rows[4].querySelector('.badge').textContent = spendPct <= 80 ? 'В норме' : 'На грани';
+        rows[4].querySelector('.badge').className = 'badge ' + (spendPct <= 80 ? 'b-good' : 'b-warn');
+      }
+
+      // dark-card Активность
+      const dk = document.querySelector('.dark-card .big');
+      if (dk) dk.innerHTML = fmt(d.steps) + ' <span class="d2">↗ ' + stepsPct + '%</span>';
+
+      // последний таймлайн-event (Итог дня)
+      const evs = document.querySelectorAll('section[data-view="today"] .ev');
+      if (evs.length) {
+        const lastEv = evs[evs.length - 1];
+        if (lastEv) lastEv.querySelector('.s').textContent = fmt(d.steps) + ' шагов · ' + fmt(d.spending) + ' ₽';
+      }
+    })
+    .catch(err => console.error('data.json не загрузился:', err));
 </script>
 </body>
 </html>
