@@ -302,13 +302,13 @@
     <!-- ===== НЕДЕЛЯ ===== -->
     <section class="view" data-view="week">
       <h2 class="page">Неделя</h2>
-      <div class="page-sub">28 июня — 4 июля</div>
+      <div class="page-sub" id="weekRange">—</div>
 
       <div class="dark-card" style="margin-top:14px">
         <div class="top"><h3>Итоги недели</h3><div class="arrow">↗</div></div>
-        <div class="big">71 680 <span class="d2" style="font-size:18px">шагов</span></div>
-        <div style="display:flex;gap:18px;font-size:12px;color:#9b9b9f">
-          <span>😴 48 ч сна</span><span>☕️ 18 кружек</span><span>💸 14 200 ₽</span>
+        <div class="big" id="weekStepsTotal">0 <span class="d2" style="font-size:18px">шагов</span></div>
+        <div style="display:flex;gap:18px;font-size:12px;color:#9b9b9f" id="weekSummary">
+          <span>😴 0 ч сна</span><span>☕️ 0 кружек</span><span>💸 0 ₾</span>
         </div>
       </div>
 
@@ -527,7 +527,32 @@
       const todayIso = new Date().toISOString().slice(0,10);
       list.innerHTML = '';
       // Показываем последние 7, новые сверху
-      const days = idx.days.slice(-7).reverse();
+      const last7 = idx.days.slice(-7);
+      const days = last7.slice().reverse();
+
+      // Итоги недели — сумма за все дни в архиве (макс 7)
+      const total = last7.reduce((acc, d) => {
+        acc.steps += d.steps || 0;
+        acc.sleep += d.sleep_hours || 0;
+        acc.coffee += d.coffee_cups || 0;
+        acc.spending += d.spending || 0;
+        return acc;
+      }, {steps:0, sleep:0, coffee:0, spending:0});
+      const wst = document.getElementById('weekStepsTotal');
+      if (wst) wst.innerHTML = total.steps.toLocaleString('ru-RU') + ' <span class="d2" style="font-size:18px">шагов</span>';
+      const wsum = document.getElementById('weekSummary');
+      if (wsum) wsum.innerHTML =
+        '<span>😴 ' + total.sleep.toLocaleString('ru-RU') + ' ч сна</span>' +
+        '<span>☕️ ' + total.coffee + ' кружек</span>' +
+        '<span>💸 ' + total.spending.toLocaleString('ru-RU') + ' ₾</span>';
+
+      // Подпись диапазона недели
+      const wrange = document.getElementById('weekRange');
+      if (wrange && last7.length) {
+        const first = last7[0].date;
+        const last = last7[last7.length - 1].date;
+        wrange.textContent = formatDateRu(first) + ' — ' + formatDateRu(last);
+      }
       for (const day of days) {
         const [y, m, dd] = day.date.split('-');
         const isToday = day.date === todayIso;
