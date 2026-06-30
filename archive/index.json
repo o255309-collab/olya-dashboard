@@ -7,6 +7,22 @@
       "mood": 10,
       "steps": 14000,
       "spending": 310
+    },
+    {
+      "date": "2026-06-30",
+      "sleep_hours": 7,
+      "coffee_cups": 0,
+      "mood": 0,
+      "steps": 0,
+      "spending": 0
+    },
+    {
+      "date": "index",
+      "sleep_hours": 0,
+      "coffee_cups": 0,
+      "mood": 0,
+      "steps": 0,
+      "spending": 0
     }
   ]
 }
