@@ -1,7 +1,7 @@
 {
   "updated_at": "2026-06-30",
   "name": "Ольга",
-  "sleep_hours": 0,
+  "sleep_hours": 7,
   "coffee_cups": 0,
   "mood": 0,
   "steps": 0,
@@ -9,8 +9,8 @@
   "spending": 0,
   "spending_limit": 1000,
   "currency": "₾",
-  "sleep_pct": 0,
-  "comment": "Новый день. Жду первых записей.",
+  "sleep_pct": 93,
+  "comment": "Сон 7 ч. День только начался.",
   "yesterday": {
     "date": "2026-06-29",
     "sleep_hours": 6.5,
