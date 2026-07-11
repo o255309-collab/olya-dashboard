@@ -97,6 +97,14 @@
       "spending": 0
     },
     {
+      "date": "2026-07-11",
+      "sleep_hours": 0,
+      "coffee_cups": 0,
+      "mood": 0,
+      "steps": 0,
+      "spending": 0
+    },
+    {
       "date": "index",
       "sleep_hours": 0,
       "coffee_cups": 0,
