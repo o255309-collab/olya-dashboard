@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-22",
+  "updated_at": "2026-07-21",
   "name": "Ольга",
   "sleep_hours": 0,
   "coffee_cups": 0,
@@ -11,5 +11,5 @@
   "currency": "₾",
   "sleep_pct": 0,
   "comment": "Новый день. Жду первых записей.",
-  "yesterday": {"date": "2026-07-21", "sleep_hours": 0, "coffee_cups": 0, "mood": 0, "steps": 0, "spending": 0, "comment": "Новый день. Жду первых записей."}
+  "yesterday": {"date": "2026-07-20", "sleep_hours": 0, "coffee_cups": 0, "mood": 0, "steps": 0, "spending": 0, "comment": "Новый день. Жду первых записей."}
 }
