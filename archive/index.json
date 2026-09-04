@@ -1,14 +1,6 @@
 {
   "days": [
     {
-      "date": "2026-08-22",
-      "sleep_hours": 0,
-      "coffee_cups": 0,
-      "mood": 0,
-      "steps": 0,
-      "spending": 0
-    },
-    {
       "date": "2026-08-23",
       "sleep_hours": 0,
       "coffee_cups": 0,
@@ -98,6 +90,14 @@
     },
     {
       "date": "2026-09-03",
+      "sleep_hours": 0,
+      "coffee_cups": 0,
+      "mood": 0,
+      "steps": 0,
+      "spending": 0
+    },
+    {
+      "date": "2026-09-04",
       "sleep_hours": 0,
       "coffee_cups": 0,
       "mood": 0,
